@@ -3,6 +3,8 @@
 #define PIN_MASK 0b111100
 #define PIN_MAX 6
 
+#define PIN_NOT_USED 0xff
+
 #define IR_LEN_MIN 2
 #define IR_LEN_MAX 10
 
@@ -111,14 +113,26 @@ void resetTestLogic()
  */
 void setupPins()
 {
+    for (int idx=0; idx<PIN_MAX; idx++)
+    {
+        if (bitRead(PIN_MASK, idx))
+        {
+            pinMode(idx, INPUT);
+        }
+    }
+
     pinMode(tck_pin, OUTPUT);
     pinMode(tms_pin, OUTPUT);
-    pinMode(tdi_pin, OUTPUT);
     pinMode(tdo_pin, INPUT_PULLUP);
 
     digitalWrite(tck_pin, LOW);
     digitalWrite(tms_pin, LOW);
-    digitalWrite(tdi_pin, LOW);
+
+    if (tdi_pin != PIN_NOT_USED)
+    {
+        digitalWrite(tdi_pin, LOW);
+        pinMode(tdi_pin, OUTPUT);
+    }
 }
 
 /**
@@ -358,6 +372,7 @@ bool testIdCode(uint8_t pinCount, int8_t counters[])
     tck_pin = counters[0];
     tms_pin = counters[1];
     tdo_pin = counters[2];
+    tdi_pin = PIN_NOT_USED;
 
     bool status = false;
     uint32_t id_code = readIdCode();
