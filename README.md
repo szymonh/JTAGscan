@@ -10,6 +10,7 @@ using two approaches:
 - by reading ID CODE to find TMS, TCK and TDO, TDI is found by shifting bits in BYPASS mode
 - by shifting bits in BYPASS mode to find TMS, TCK, TDO and TDI
 The first approach is quicker and thus preferred.
+
 Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will be needed for them.
 
 ## How to use it?
