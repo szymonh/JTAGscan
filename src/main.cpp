@@ -524,9 +524,10 @@ void commandLineInterface()
             break;
         case 'd':
             {
-                Serial.print("Choose debug level 0-2 ");
-                byte choice = readCliByte() - 0x30;
+                byte choice = (debug+1)%3;
                 debug = (enum debug_level) choice;
+                Serial.print("Debug level set to ");
+                Serial.println(debug);
             }
             break;
         case 'h':
