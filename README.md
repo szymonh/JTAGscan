@@ -36,8 +36,9 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
  a - Automatically find all pins
  i - IDCODE search for pins
  b - BYPASS search for pins
- t - TDI-only BYPASS search
- d - set debug level
+ t - TDI-only BYPASS search 
+ d - set debug level: 0
+ p - adjust max pins used: 8
  h - print this help
 ---------------------------------
 ```
