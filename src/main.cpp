@@ -480,6 +480,8 @@ void commandLineInterface()
                 bool tdi_found = false;
                 uint32_t id_code = 0;
 
+                Serial.println("Automatically finding TCK, TMS, and TDO using IDCODE scan...");
+
                 // find tck, tms and tdo using id code scan
                 id_hit = identifyPins(3, &testIdCode);
 
@@ -505,12 +507,15 @@ void commandLineInterface()
             }
             break;
         case 'i':
+            Serial.println("IDCODE searching for TCK, TMS, and TDO...");
             identifyPins(3, &testIdCode);
             break;
         case 'b':
+            Serial.println("BYPASS searching for TCK, TMS, TDO, and TDI...");
             identifyPins(4, &testBypass);
             break;
         case 't':
+            Serial.println("BYPASS searching for TDI with known TCK, TMS, and TDO...");
             bitWrite(pin_blacklist, tck_pin, HIGH);
             bitWrite(pin_blacklist, tms_pin, HIGH);
             bitWrite(pin_blacklist, tdo_pin, HIGH);
