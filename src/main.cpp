@@ -502,7 +502,7 @@ void commandLineInterface()
                 // either id code not read or tdi still missing
                 if (!id_hit || !tdi_found)
                 {
-                    identifyPins(4, &testBypass);
+                    Serial.println("No valid TCK, TMS, and TDO found. Press 'b' for full bypass scan");
                 }
             }
             break;
