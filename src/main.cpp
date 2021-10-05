@@ -474,7 +474,7 @@ void commandLineInterface()
     char selection = readCliByte();
     switch (selection)
     {
-        case 'e':
+        case 'a':
             {
                 bool id_hit = false;
                 bool tdi_found = false;
@@ -504,13 +504,13 @@ void commandLineInterface()
                 }
             }
             break;
-        case 'f':
+        case 'i':
             identifyPins(3, &testIdCode);
             break;
-        case 'g':
+        case 'b':
             identifyPins(4, &testBypass);
             break;
-        case 'i':
+        case 't':
             bitWrite(pin_blacklist, tck_pin, HIGH);
             bitWrite(pin_blacklist, tms_pin, HIGH);
             bitWrite(pin_blacklist, tdo_pin, HIGH);
@@ -526,11 +526,11 @@ void commandLineInterface()
             break;
         case 'h':
         default:
-            Serial.println("e - enumerate JTAG pins in automatic mode");
-            Serial.println("f - enumerate pins by reading ID CODE");
-            Serial.println("g - enumerate lines using BYPASS mode");
+            Serial.println("a - Automatically enumerate JTAG pins");
+            Serial.println("i - IDCODE search for pins");
+            Serial.println("b - BYPASS search for pins");
             Serial.println("h - print this help");
-            Serial.println("i - find TDI using BYPASS mode");
+            Serial.println("t - TDI BYPASS search with known other pins");
             Serial.println("d - set debug level");
             break;
     }
