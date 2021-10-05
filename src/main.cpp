@@ -29,6 +29,8 @@
 #define getPartNo(value) ((value >> 12) & 0xffff)
 #define getManufacturer(value) ((value >> 1) & 0x7ff)
 
+uint8_t pins_used = PIN_MAX;
+
 uint32_t bypass_pattern = 0b10011101001101101000010111001001;
 
 uint8_t ir_length = 2;
@@ -113,7 +115,7 @@ void resetTestLogic()
  */
 void setupPins()
 {
-    for (int idx=0; idx<PIN_MAX; idx++)
+    for (int idx=0; idx<pins_used; idx++)
     {
         if (bitRead(PIN_MASK, idx))
         {
@@ -244,7 +246,7 @@ int8_t getNextPin(uint8_t pinIndex, uint8_t pinCount, int8_t pinArray[])
     int8_t candidate = -1;
     bool duplicate = false;
 
-    for (int idx=pinArray[pinIndex]; idx<PIN_MAX; idx++)
+    for (int idx=pinArray[pinIndex]; idx<pins_used; idx++)
     {
         if (bitRead(PIN_MASK, idx) && !bitRead(pin_blacklist, idx))
         {
@@ -567,6 +569,13 @@ void commandLineInterface()
             identifyPins(1, &testBypass);
             pin_blacklist = 0;
             break;
+        case 'p':
+            {
+                if (--pins_used <= 3) pins_used=PIN_MAX;
+                Serial.print("Searching on pins 0 to ");
+                Serial.println(pins_used-1);
+            }
+            break;
         case 'd':
             {
                 byte choice = (debug+1)%3;
@@ -583,7 +592,10 @@ void commandLineInterface()
             Serial.println(" i - IDCODE search for pins");
             Serial.println(" b - BYPASS search for pins");
             Serial.println(" t - TDI-only BYPASS search");
-            Serial.println(" d - set debug level");
+            Serial.print(" d - set debug level: ");
+            Serial.println((byte)debug);
+            Serial.print(" p - adjust max pins used: ");
+            Serial.println(pins_used);
             Serial.println(" h - print this help");
             Serial.println("---------------------------------");
             break;
