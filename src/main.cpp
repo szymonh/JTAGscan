@@ -22,8 +22,8 @@
 #define EXIT_IR_TO_SHIFT_DR_LEN 4
 
 #define PROMPT "> "
-#define ROW_FORMAT "tck: %2d | tms: %2d | tdo: %2d | tdi:  X | value: %6lx\r\n"
-#define ROW_FORMAT_TDI "tck: %2d | tms: %2d | tdo: %2d | tdi: %2d | value: %6lx\r\n"
+#define ROW_FORMAT "|%4d |%4d |%4d |%12lx |\r\n"
+#define ROW_FORMAT_TDI "|%4d |%4d |%4d |%4d |%6ld |\r\n"
 
 #define getVersion(value) ((value >> 28) & 0xf)
 #define getPartNo(value) ((value >> 12) & 0xffff)
@@ -68,8 +68,8 @@ bool moveBit(bool tms_val, bool tdi_val)
 
     if (debug == verbose)
     {
-        char buffer[34];
-        sprintf(buffer, "TMS: %d | TDI: %d | TDO: %d\r\n", tms_val, tdi_val, tdo_val);
+        char buffer[64];
+        sprintf(buffer, "| --- | --- | --- | --- | ----- |%2d |%2d |%2d |\r\n", tms_val, tdi_val, tdo_val);
         Serial.print(buffer);
     }
 
@@ -283,7 +283,9 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
     int8_t counters[pinCount];
     memset(counters, -1, pinCount);
     bool noMoreCandidates = false;
-    
+
+    Serial.println("---------------------------------");
+
     // select initial set of pins
     for (uint8_t idx=0; idx<pinCount; idx++)
     {
@@ -297,6 +299,7 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
         bool result = (*evaluator)(pinCount, counters);
         if (result)
         {
+            Serial.println("------------ SUCCESS ------------");
             return result;
         }
 
@@ -335,6 +338,7 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
         }
     }
 
+    Serial.println("------------- FAIL --------------");
     return false;
 }
 
@@ -466,6 +470,26 @@ void printPrompt()
     Serial.print(PROMPT);
 }
 
+void idcodeBanner()
+{
+  Serial.print("| TCK | TMS | TDO |      IDCODE |");
+  if (debug == verbose){
+    Serial.println("tms|tdi|tdo|");
+  } else{
+    Serial.println("");
+  }
+}
+
+void widthBanner()
+{
+  Serial.print("| TCK | TMS | TDO | TDI | Width |");
+  if (debug == verbose){
+    Serial.println("tms|tdi|tdo|");
+  } else{
+    Serial.println("");
+  }
+}
+
 /**
  * Minimalistic command line interface
  */
@@ -480,16 +504,25 @@ void commandLineInterface()
                 bool tdi_found = false;
                 uint32_t id_code = 0;
 
-                Serial.println("Automatically finding TCK, TMS, and TDO using IDCODE scan...");
+                Serial.println("     Automatically searching");
+                Serial.println("--- Starting with IDCODE scan ---");
+                idcodeBanner();
 
                 // find tck, tms and tdo using id code scan
                 id_hit = identifyPins(3, &testIdCode);
+
+                if (debug != quiet){
+                    idcodeBanner();
+                    Serial.println("------- IDCODE complete ---------");
+                }
 
                 if (id_hit)
                 {
                     // if id code is consistent search for tdi
                     id_code = readIdCode(); 
-                    if (id_code == readIdCode())
+                    Serial.println("    TCK, TMS, and TDO found.");
+                    Serial.println("--- BYPASS searching, just TDI --");
+                    widthBanner();
                     {
                         bitWrite(pin_blacklist, tck_pin, HIGH);
                         bitWrite(pin_blacklist, tms_pin, HIGH);
@@ -502,20 +535,32 @@ void commandLineInterface()
                 // either id code not read or tdi still missing
                 if (!id_hit || !tdi_found)
                 {
-                    Serial.println("No valid TCK, TMS, and TDO found. Press 'b' for full bypass scan");
+                    Serial.println(" No valid TCK, TMS, and TDO found");
+                    Serial.println("  Press 'b' for full bypass scan");
                 }
             }
             break;
         case 'i':
-            Serial.println("IDCODE searching for TCK, TMS, and TDO...");
+            Serial.println("------- IDCODE searching --------");
+            idcodeBanner();
             identifyPins(3, &testIdCode);
+            if (debug != quiet){
+                idcodeBanner();
+                Serial.println("------- IDCODE complete ---------");
+            }
             break;
         case 'b':
-            Serial.println("BYPASS searching for TCK, TMS, TDO, and TDI...");
+            Serial.println("------- BYPASS searching --------");
+            widthBanner();
             identifyPins(4, &testBypass);
+            if (debug != quiet){
+                widthBanner();
+                Serial.println("------- BYPASS complete ---------");
+            }
             break;
         case 't':
-            Serial.println("BYPASS searching for TDI with known TCK, TMS, and TDO...");
+            Serial.println("--- BYPASS searching, just TDI --");
+            widthBanner();
             bitWrite(pin_blacklist, tck_pin, HIGH);
             bitWrite(pin_blacklist, tms_pin, HIGH);
             bitWrite(pin_blacklist, tdo_pin, HIGH);
@@ -530,14 +575,17 @@ void commandLineInterface()
                 Serial.println(debug);
             }
             break;
-        case 'h':
         default:
-            Serial.println("a - Automatically enumerate JTAG pins");
-            Serial.println("i - IDCODE search for pins");
-            Serial.println("b - BYPASS search for pins");
-            Serial.println("h - print this help");
-            Serial.println("t - TDI BYPASS search with known other pins");
-            Serial.println("d - set debug level");
+            Serial.println("---------------------------------");
+            Serial.println("-- JTAGscan Jtag Pinout Finder --");
+            Serial.println("---------------------------------");
+            Serial.println(" a - Automatically find all pins");
+            Serial.println(" i - IDCODE search for pins");
+            Serial.println(" b - BYPASS search for pins");
+            Serial.println(" t - TDI-only BYPASS search");
+            Serial.println(" d - set debug level");
+            Serial.println(" h - print this help");
+            Serial.println("---------------------------------");
             break;
     }
 }
