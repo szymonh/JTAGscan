@@ -29,7 +29,7 @@
 #define getPartNo(value) ((value >> 12) & 0xffff)
 #define getManufacturer(value) ((value >> 1) & 0x7ff)
 
-uint8_t pins_used = PIN_MAX;
+uint8_t pins_used = 6;
 
 uint32_t bypass_pattern = 0b10011101001101101000010111001001;
 
@@ -576,6 +576,7 @@ void commandLineInterface()
                 Serial.println(pins_used-1);
             }
             break;
+        case 'v':
         case 'd':
             {
                 byte choice = (debug+1)%3;
@@ -592,9 +593,9 @@ void commandLineInterface()
             Serial.println(" i - IDCODE search for pins");
             Serial.println(" b - BYPASS search for pins");
             Serial.println(" t - TDI-only BYPASS search");
-            Serial.print(" d - set debug level: ");
+            Serial.print(" d - set debug level. current: ");
             Serial.println((byte)debug);
-            Serial.print(" p - adjust max pins used: ");
+            Serial.print(" p - adjust # pins. current: ");
             Serial.println(pins_used);
             Serial.println(" h - print this help");
             Serial.println("---------------------------------");
