@@ -23,77 +23,139 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
 - establish serial connection with baud rate of 115200
 - ammend debug options if required
 - use option _h_ for help
-- use option _e_ to enumerate pins using available methods
+- use option _a_ to automatically enumerate pins using available methods
 
 ## How does it look like?
 
 - help
 ```
 > h
-e - enumerate JTAG pins in automatic mode
-f - enumerate pins by reading ID CODE
-g - enumerate lines using BYPASS mode
-h - print this help
-i - find TDI using BYPASS mode
-d - set debug level
+---------------------------------
+-- JTAGscan Jtag Pinout Finder --
+---------------------------------
+ a - Automatically find all pins
+ i - IDCODE search for pins
+ b - BYPASS search for pins
+ t - TDI-only BYPASS search 
+ d - set debug level: 0
+ p - adjust max pins used: 8
+ h - print this help
+---------------------------------
 ```
 - automatic enumeration on a Kinetis based board
 ```
-> e
-tck:  4 | tms:  2 | tdo:  5 | tdi:  X | value: cba00477
-tck:  4 | tms:  2 | tdo:  5 | tdi:  3 | value:     1f
+> a
+     Automatically searching
+--- Starting with IDCODE scan ---
+| TCK | TMS | TDO |      IDCODE |
+---------------------------------
+|   2 |   3 |   0 |    cba00477 |
+------------ SUCCESS ------------
+    TCK, TMS, and TDO found.
+--- BYPASS searching, just TDI --
+| TCK | TMS | TDO | TDI | Width |
+---------------------------------
+|   2 |   3 |   0 |   1 |    31 |
+------------ SUCCESS ------------
 ```
 
-- ID CODE enumeration of TCK, TMS and TDO lines with debug level 1
+- toggle debug level to 1, then ID CODE enumeration of TCK, TMS and TDO lines
 ```
 > d
-Choose debug level 0-2 1
-> f
-tck:  2 | tms:  3 | tdo:  4 | tdi:  X | value:      0
-tck:  2 | tms:  3 | tdo:  5 | tdi:  X | value:      0
-tck:  2 | tms:  4 | tdo:  3 | tdi:  X | value:      0
-tck:  2 | tms:  4 | tdo:  5 | tdi:  X | value:      0
-tck:  2 | tms:  5 | tdo:  3 | tdi:  X | value:      0
-tck:  2 | tms:  5 | tdo:  4 | tdi:  X | value:      0
-tck:  3 | tms:  2 | tdo:  4 | tdi:  X | value:      0
-tck:  3 | tms:  2 | tdo:  5 | tdi:  X | value:      0
-tck:  3 | tms:  4 | tdo:  2 | tdi:  X | value:      0
-tck:  3 | tms:  4 | tdo:  5 | tdi:  X | value:      0
-tck:  3 | tms:  5 | tdo:  2 | tdi:  X | value:      0
-tck:  3 | tms:  5 | tdo:  4 | tdi:  X | value:      0
-tck:  4 | tms:  2 | tdo:  3 | tdi:  X | value:      0
-tck:  4 | tms:  2 | tdo:  5 | tdi:  X | value:      0
-tck:  4 | tms:  3 | tdo:  2 | tdi:  X | value:      0
-tck:  4 | tms:  3 | tdo:  5 | tdi:  X | value:      0
-tck:  4 | tms:  5 | tdo:  2 | tdi:  X | value: cba00477
+Debug level set to 1
+> i
+------- IDCODE searching --------
+| TCK | TMS | TDO |      IDCODE |
+---------------------------------
+|   0 |   1 |   2 |           0 |
+|   0 |   1 |   3 |           0 |
+|   0 |   1 |   4 |           0 |
+|   0 |   1 |   5 |           0 |
+|   0 |   2 |   1 |           0 |
+|   0 |   2 |   3 |           0 |
+|   0 |   2 |   4 |           0 |
+|   0 |   2 |   5 |           0 |
+|   0 |   3 |   1 |           0 |
+|   0 |   3 |   2 |           0 |
+|   0 |   3 |   4 |           0 |
+|   0 |   3 |   5 |           0 |
+|   0 |   4 |   1 |           0 |
+|   0 |   4 |   2 |           0 |
+|   0 |   4 |   3 |           0 |
+|   0 |   4 |   5 |           0 |
+|   0 |   5 |   1 |           0 |
+|   0 |   5 |   2 |           0 |
+|   0 |   5 |   3 |           0 |
+|   0 |   5 |   4 |           0 |
+|   1 |   0 |   2 |           0 |
+|   1 |   0 |   3 |           0 |
+|   1 |   0 |   4 |           0 |
+|   1 |   0 |   5 |           0 |
+|   1 |   2 |   0 |           0 |
+|   1 |   2 |   3 |           0 |
+|   1 |   2 |   4 |           0 |
+|   1 |   2 |   5 |           0 |
+|   1 |   3 |   0 |           0 |
+|   1 |   3 |   2 |           0 |
+|   1 |   3 |   4 |           0 |
+|   1 |   3 |   5 |           0 |
+|   1 |   4 |   0 |           0 |
+|   1 |   4 |   2 |           0 |
+|   1 |   4 |   3 |           0 |
+|   1 |   4 |   5 |           0 |
+|   1 |   5 |   0 |           0 |
+|   1 |   5 |   2 |           0 |
+|   1 |   5 |   3 |           0 |
+|   1 |   5 |   4 |           0 |
+|   2 |   0 |   1 |           0 |
+|   2 |   0 |   3 |           0 |
+|   2 |   0 |   4 |           0 |
+|   2 |   0 |   5 |           0 |
+|   2 |   1 |   0 |           0 |
+|   2 |   1 |   3 |           0 |
+|   2 |   1 |   4 |           0 |
+|   2 |   1 |   5 |           0 |
+|   2 |   3 |   0 |    4ba00477 |
+------------ SUCCESS ------------
+| TCK | TMS | TDO |      IDCODE |
+------- IDCODE complete ---------
 ```
 
 - enumeration of TDI following a ID CODE scan
 ```
-> i
-tck:  4 | tms:  5 | tdo:  2 | tdi:  3 | value:     1f
+> t                
+--- BYPASS searching, just TDI --
+| TCK | TMS | TDO | TDI | Width |
+---------------------------------
+|   2 |   3 |   0 |   1 |    31 |
+------------ SUCCESS ------------
 ```
 
 - full identification of lines using BYPASS mode
 ```
-> g
-tck:  2 | tms:  3 | tdo:  4 | tdi:  5 | value:      0
-tck:  2 | tms:  3 | tdo:  5 | tdi:  4 | value:      0
-tck:  2 | tms:  4 | tdo:  3 | tdi:  5 | value:      0
-tck:  2 | tms:  4 | tdo:  5 | tdi:  3 | value:      0
-tck:  2 | tms:  5 | tdo:  3 | tdi:  4 | value:      0
-tck:  2 | tms:  5 | tdo:  4 | tdi:  3 | value:      0
-tck:  3 | tms:  2 | tdo:  4 | tdi:  5 | value:      0
-tck:  3 | tms:  2 | tdo:  5 | tdi:  4 | value:      0
-tck:  3 | tms:  4 | tdo:  2 | tdi:  5 | value:      0
-tck:  3 | tms:  4 | tdo:  5 | tdi:  2 | value:      0
-tck:  3 | tms:  5 | tdo:  2 | tdi:  4 | value:      0
-tck:  3 | tms:  5 | tdo:  4 | tdi:  2 | value:      0
-tck:  4 | tms:  2 | tdo:  3 | tdi:  5 | value:      0
-tck:  4 | tms:  2 | tdo:  5 | tdi:  3 | value:      0
-tck:  4 | tms:  3 | tdo:  2 | tdi:  5 | value:      0
-tck:  4 | tms:  3 | tdo:  5 | tdi:  2 | value:      0
-tck:  4 | tms:  5 | tdo:  2 | tdi:  3 | value:     1f
+> b
+------- BYPASS searching --------
+| TCK | TMS | TDO | TDI | Width |
+---------------------------------
+|   0 |   1 |   2 |   3 |     0 |
+|   0 |   1 |   2 |   4 |     0 |
+|   0 |   1 |   2 |   5 |     0 |
+|   0 |   1 |   3 |   2 |     0 |
+|   0 |   1 |   3 |   4 |     0 |
+|   0 |   1 |   3 |   5 |     0 |
+|   0 |   1 |   4 |   2 |     0 |
+|   0 |   1 |   4 |   3 |     0 |
+|   0 |   1 |   4 |   5 |     0 |
+...
+|   2 |   1 |   4 |   3 |     0 |
+|   2 |   1 |   4 |   5 |     0 |
+|   2 |   1 |   5 |   0 |     0 |
+|   2 |   1 |   5 |   3 |     0 |
+|   2 |   1 |   5 |   4 |     0 |
+|   2 |   3 |   0 |   1 |    31 |
+------------ SUCCESS ------------
+| TCK | TMS | TDO | TDI | Width |
+------- BYPASS complete ---------
 ```
 
 ## No Platformio?
