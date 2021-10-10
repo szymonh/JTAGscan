@@ -652,9 +652,9 @@ void commandLineInterface()
             }
             break;
         default:
-            Serial.println("---------------------------------");
-            Serial.println("-- JTAGscan Jtag Pinout Finder --");
-            Serial.println("---------------------------------");
+            Serial.println("+-------------------------------+");
+            Serial.println("|  JTAGscan Jtag Pinout Finder  |");
+            Serial.println("+-------------------------------+");
             Serial.println(" a - Automatically find all pins");
             Serial.println(" i - IDCODE search for pins");
             Serial.println(" b - BYPASS search for pins");
@@ -664,7 +664,7 @@ void commandLineInterface()
             Serial.print(" d - set debug level. current: ");
             Serial.println((byte)debug);
             Serial.println(" h - print this help");
-            Serial.println("---------------------------------");
+            Serial.println("+-------------------------------+");
             break;
     }
 }

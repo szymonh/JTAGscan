@@ -38,9 +38,9 @@ without the need to rebuild the project.
 - help
 ```
 > h
----------------------------------
--- JTAGscan Jtag Pinout Finder --
----------------------------------
++-------------------------------+
+|  JTAGscan Jtag Pinout Finder  |
++-------------------------------+
  a - Automatically find all pins
  i - IDCODE search for pins
  b - BYPASS search for pins
@@ -48,7 +48,7 @@ without the need to rebuild the project.
  d - set debug level: 0
  p - adjust max pins used: 8
  h - print this help
----------------------------------
++-------------------------------+
 ```
 - automatic enumeration on a Kinetis based board
 ```
