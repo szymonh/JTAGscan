@@ -504,7 +504,6 @@ void commandLineInterface()
             {
                 bool id_hit = false;
                 bool tdi_found = false;
-                uint32_t id_code = 0;
 
                 Serial.println("     Automatically searching");
                 Serial.println("+-- Starting with IDCODE scan --+");
@@ -520,8 +519,6 @@ void commandLineInterface()
 
                 if (id_hit)
                 {
-                    // if id code is consistent search for tdi
-                    id_code = readIdCode();
                     Serial.println("    TCK, TMS, and TDO found.");
                     Serial.println("");
                     Serial.println("+-- BYPASS searching, just TDI -+");
