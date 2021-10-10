@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
 #define PIN_MASK 0b11111100
-#define PIN_MAX 8
 
 #define PIN_NOT_USED 0xff
 
@@ -29,7 +28,8 @@
 #define getPartNo(value) ((value >> 12) & 0xffff)
 #define getManufacturer(value) ((value >> 1) & 0x7ff)
 
-uint8_t pins_used = 6;
+uint64_t pin_mask = PIN_MASK;
+uint8_t pin_max = 0;
 
 uint32_t bypass_pattern = 0b10011101001101101000010111001001;
 
@@ -115,7 +115,7 @@ void resetTestLogic()
  */
 void setupPins()
 {
-    for (int idx=0; idx<pins_used; idx++)
+    for (int idx=0; idx<pin_max; idx++)
     {
         if (bitRead(PIN_MASK, idx))
         {
@@ -246,7 +246,7 @@ int8_t getNextPin(uint8_t pinIndex, uint8_t pinCount, int8_t pinArray[])
     int8_t candidate = -1;
     bool duplicate = false;
 
-    for (int idx=pinArray[pinIndex]; idx<pins_used; idx++)
+    for (int idx=pinArray[pinIndex]; idx<pin_max; idx++)
     {
         if (bitRead(PIN_MASK, idx) && !bitRead(pin_blacklist, idx))
         {
@@ -443,6 +443,36 @@ bool testBypass(uint8_t pinCount, int8_t counters[])
 }
 
 /**
+ * Determine greatest pin set in provided mask
+ *
+ * @param: pin mask
+ * @return: highest pin number
+ */
+uint8_t getMaxPinFromMask(uint64_t pin_mask)
+{
+    uint8_t highest_pin = 0;
+    for (uint8_t i=0; i<64; i++)
+    {
+        if (bitRead(pin_mask, i) == HIGH)
+        {
+            highest_pin = i;
+        }
+    }
+    return highest_pin + 1;
+}
+
+/**
+ * Read and discard data on serial port
+ */
+void clearSerial()
+{
+    while (Serial.available() > 0)
+    {
+        Serial.read();
+    }
+}
+
+/**
  * Read cli byte
  *
  * Waits for input as long as necessary.
@@ -456,9 +486,45 @@ byte readCliByte()
         if (Serial.available() > 0)
         {
             byte input = Serial.read();
-            Serial.write(input);
+            Serial.write((input >= 0x20 && input <= 0x7e) ? input : 0x20);
             Serial.println("");
+            clearSerial();
             return input;
+        }
+        delay(100);
+    }
+}
+
+/**
+ * Read long int from cli
+ *
+ * Waits for input as long as necessary.
+ *
+ * @return: long uint read from serial port
+ */
+uint64_t readCliUnsignedInt()
+{
+    char buffer[20];
+    uint8_t idx = 0;
+
+    while (true)
+    {
+        if (Serial.available() > 0)
+        {
+            byte input = Serial.read();
+            Serial.write((input >= 0x20 && input <= 0x7e) ? input : 0x20);
+            if ((idx < sizeof(buffer) - 1) && (input != 0x0d) && (input != 0x0a))
+            {
+                if (input >= 0x30 && input <= 0x7a)
+                    buffer[idx++] = input;
+            }
+            else
+            {
+                Serial.println("");
+                clearSerial();
+                buffer[idx] = 0x00;
+                return strtoul(buffer, NULL, 0);
+            }
         }
         delay(100);
     }
@@ -567,11 +633,13 @@ void commandLineInterface()
             identifyPins(1, &testBypass);
             pin_blacklist = 0;
             break;
-        case 'p':
+        case 'm':
             {
-                if (--pins_used <= 3) pins_used=PIN_MAX;
-                Serial.print("Searching on pins 0 to ");
-                Serial.println(pins_used-1);
+                Serial.print("Enter pin mask ");
+                pin_mask = readCliUnsignedInt();
+                pin_max = getMaxPinFromMask(pin_mask);
+                Serial.print("Pin mask set to ");
+                Serial.println((unsigned long) pin_mask, BIN);
             }
             break;
         case 'v':
@@ -591,10 +659,10 @@ void commandLineInterface()
             Serial.println(" i - IDCODE search for pins");
             Serial.println(" b - BYPASS search for pins");
             Serial.println(" t - TDI-only BYPASS search");
+            Serial.print(" m - set pin mask, current: 0x");
+            Serial.println((unsigned long) pin_mask, HEX);
             Serial.print(" d - set debug level. current: ");
             Serial.println((byte)debug);
-            Serial.print(" p - adjust # pins. current: ");
-            Serial.println(pins_used);
             Serial.println(" h - print this help");
             Serial.println("---------------------------------");
             break;
@@ -606,6 +674,8 @@ void commandLineInterface()
  */
 void setup()
 {
+    pin_max = getMaxPinFromMask(pin_mask);
+    debug = normal;
     Serial.begin(115200);
 }
 
