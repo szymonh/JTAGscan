@@ -17,13 +17,21 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
 
 - hook up your Arduino to the target
 - use a logic level shifer between Arduino and target if required
-- adjust PIN_MASK and PIN_MAX for your setup
+- adjust PIN_MASK for your setup (can be done later using _m_)
 - select proper build target
 - build the project and upload it to your board
 - establish serial connection with baud rate of 115200
 - ammend debug options if required
 - use option _h_ for help
 - use option _a_ to automatically enumerate pins using available methods
+
+# How to set the pin_mask?
+
+Pins are enabled by setting corresponding bits of PIN_MASK, i.e. pins 2-8 are enabled for PIN_MASK of 0b111111100 or 0x1fc.
+
+Besides PIN_MASK predefined at build time you can also set the pin mask at runtime using the
+_m_ command. Entering 508 or 0x1fc will result in pin_mask set to 0b111111100 so you can update the configuration
+without the need to rebuild the project.
 
 ## How does it look like?
 
