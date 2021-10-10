@@ -45,8 +45,8 @@ without the need to rebuild the project.
  i - IDCODE search for pins
  b - BYPASS search for pins
  t - TDI-only BYPASS search
- d - set debug level: 0
- p - adjust max pins used: 8
+ m - set pin mask, current: 0xFC
+ d - set debug level: 1
  h - print this help
 +-------------------------------+
 ```
