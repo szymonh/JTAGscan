@@ -36,7 +36,7 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
  a - Automatically find all pins
  i - IDCODE search for pins
  b - BYPASS search for pins
- t - TDI-only BYPASS search 
+ t - TDI-only BYPASS search
  d - set debug level: 0
  p - adjust max pins used: 8
  h - print this help
@@ -46,17 +46,18 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
 ```
 > a
      Automatically searching
---- Starting with IDCODE scan ---
++-- Starting with IDCODE scan --+
 | TCK | TMS | TDO |      IDCODE |
----------------------------------
++-------------------------------+
 |   2 |   3 |   0 |    cba00477 |
------------- SUCCESS ------------
++----------- SUCCESS -----------+
     TCK, TMS, and TDO found.
---- BYPASS searching, just TDI --
+
++-- BYPASS searching, just TDI -+
 | TCK | TMS | TDO | TDI | Width |
----------------------------------
++-------------------------------+
 |   2 |   3 |   0 |   1 |    31 |
------------- SUCCESS ------------
++----------- SUCCESS -----------+
 ```
 
 - toggle debug level to 1, then ID CODE enumeration of TCK, TMS and TDO lines
@@ -64,9 +65,9 @@ Unfortunately not all chips support ID CODE retrieval so BYPASS mode scan will b
 > d
 Debug level set to 1
 > i
-------- IDCODE searching --------
++------ IDCODE searching -------+
 | TCK | TMS | TDO |      IDCODE |
----------------------------------
++-------------------------------+
 |   0 |   1 |   2 |           0 |
 |   0 |   1 |   3 |           0 |
 |   0 |   1 |   4 |           0 |
@@ -85,27 +86,27 @@ Debug level set to 1
 |   2 |   1 |   4 |           0 |
 |   2 |   1 |   5 |           0 |
 |   2 |   3 |   0 |    4ba00477 |
------------- SUCCESS ------------
++----------- SUCCESS -----------+
 | TCK | TMS | TDO |      IDCODE |
-------- IDCODE complete ---------
++------ IDCODE complete --------+
 ```
 
 - enumeration of TDI following a ID CODE scan
 ```
-> t                
---- BYPASS searching, just TDI --
+> t
++-- BYPASS searching, just TDI -+
 | TCK | TMS | TDO | TDI | Width |
----------------------------------
++-------------------------------+
 |   2 |   3 |   0 |   1 |    31 |
------------- SUCCESS ------------
++----------- SUCCESS -----------+
 ```
 
 - full identification of lines using BYPASS mode
 ```
 > b
-------- BYPASS searching --------
++------ BYPASS searching -------+
 | TCK | TMS | TDO | TDI | Width |
----------------------------------
++-------------------------------+
 |   0 |   1 |   2 |   3 |     0 |
 |   0 |   1 |   2 |   4 |     0 |
 |   0 |   1 |   2 |   5 |     0 |
@@ -122,9 +123,9 @@ Debug level set to 1
 |   2 |   1 |   5 |   3 |     0 |
 |   2 |   1 |   5 |   4 |     0 |
 |   2 |   3 |   0 |   1 |    31 |
------------- SUCCESS ------------
++----------- SUCCESS -----------+
 | TCK | TMS | TDO | TDI | Width |
-------- BYPASS complete ---------
++------ BYPASS complete --------+
 ```
 
 ## No Platformio?

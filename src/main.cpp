@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#define PIN_MASK 0b111100
-#define PIN_MAX 6
+#define PIN_MASK 0b11111100
+#define PIN_MAX 8
 
 #define PIN_NOT_USED 0xff
 
@@ -80,7 +80,7 @@ bool moveBit(bool tms_val, bool tdi_val)
 
 /**
  * Transfer values over TMS and TDI reading TDO
- * 
+ *
  * @param: value to write to TMS
  * @param: value to write to TDI
  * @param: value read from TDO (nullable)
@@ -102,9 +102,9 @@ void moveBits(uint32_t tms_val, uint32_t tdi_val, uint32_t * tdo_val, uint8_t wi
 
 /**
  * Reset test logic
- * 
+ *
  * Uses only the TMS line
- */ 
+ */
 void resetTestLogic()
 {
     moveBits(0b011111, 0, NULL, 6);
@@ -150,7 +150,7 @@ void resetPins()
 
 /**
  * Check presence of bit in specified value
- * 
+ *
  * @param: value
  * @param: bit
  * @returns: number of occurences
@@ -167,14 +167,14 @@ uint32_t bitCount(uint32_t value, uint8_t bitState)
 
 /**
  * Check if id code looks correct
- * 
+ *
  * @params: ID CODE
  * @returns: check result
  */
 bool verifyIdCode(uint32_t id_code)
 {
     return !(
-        bitRead(id_code, 0) == 0 || 
+        bitRead(id_code, 0) == 0 ||
         getManufacturer(id_code) == 0 ||
         getManufacturer(id_code) == 0x7ff ||
         getPartNo(id_code) == 0 ||
@@ -187,7 +187,7 @@ bool verifyIdCode(uint32_t id_code)
 
 /**
  * Read device ID CODE
- * 
+ *
  * @returns: 32 bit id code value
  */
 uint32_t readIdCode()
@@ -202,10 +202,10 @@ uint32_t readIdCode()
 
 /**
  * Transfer data in BYPASS mode
- * 
+ *
  * A 32-bit test pattern is shifted into TDI
  * and expected to occur on TDO.
- * 
+ *
  * @returns: number of shifts needed to read pattern
  */
 uint32_t passthroughData()
@@ -235,7 +235,7 @@ uint32_t passthroughData()
 
 /**
  * Get next candidate pin
- * 
+ *
  * @param: current pin index in pinArray
  * @param: size of pinArray
  * @param: array of counter
@@ -274,7 +274,7 @@ int8_t getNextPin(uint8_t pinIndex, uint8_t pinCount, int8_t pinArray[])
 
 /**
  * Try to detect debug pins using provided evaluator
- * 
+ *
  * @param: number of pins to find
  * @param: evaluator function
  * @returns: boolean outcome
@@ -286,7 +286,7 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
     memset(counters, -1, pinCount);
     bool noMoreCandidates = false;
 
-    Serial.println("---------------------------------");
+    Serial.println("+-------------------------------+");
 
     // select initial set of pins
     for (uint8_t idx=0; idx<pinCount; idx++)
@@ -301,7 +301,7 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
         bool result = (*evaluator)(pinCount, counters);
         if (result)
         {
-            Serial.println("------------ SUCCESS ------------");
+            Serial.println("+----------- SUCCESS -----------+");
             return result;
         }
 
@@ -340,13 +340,13 @@ bool identifyPins(uint8_t pinCount, bool (*evaluator) (uint8_t, int8_t[]))
         }
     }
 
-    Serial.println("------------- FAIL --------------");
+    Serial.println("+------------ FAIL -------------+");
     return false;
 }
 
 /**
  * Print a line with current pin mapping and outcome
- * 
+ *
  * @param: should tdi be included
  * @param: corresponding value
  */
@@ -362,7 +362,7 @@ void printResultRow(bool include_tdi, uint32_t value)
     {
         sprintf(dbgBuffer, ROW_FORMAT, tck_pin, tms_pin, tdo_pin, value);
     }
-    
+
     Serial.print(dbgBuffer);
 }
 
@@ -371,7 +371,7 @@ void printResultRow(bool include_tdi, uint32_t value)
  *
  * @param: number of pins
  * @param: array of counters
- * @returns: outcome 
+ * @returns: outcome
  */
 bool testIdCode(uint8_t pinCount, int8_t counters[])
 {
@@ -403,15 +403,15 @@ bool testIdCode(uint8_t pinCount, int8_t counters[])
         printResultRow(false, id_code);
     }
 
-    return status;    
+    return status;
 }
 
 /**
- * Bypass evaluator 
+ * Bypass evaluator
  *
  * @param: number of pins
  * @param: array of counters
- * @returns: outcome 
+ * @returns: outcome
  */
 bool testBypass(uint8_t pinCount, int8_t counters[])
 {
@@ -444,7 +444,7 @@ bool testBypass(uint8_t pinCount, int8_t counters[])
 
 /**
  * Read cli byte
- * 
+ *
  * Waits for input as long as necessary.
  *
  * @return: byte read from serial port
@@ -507,7 +507,7 @@ void commandLineInterface()
                 uint32_t id_code = 0;
 
                 Serial.println("     Automatically searching");
-                Serial.println("--- Starting with IDCODE scan ---");
+                Serial.println("+-- Starting with IDCODE scan --+");
                 idcodeBanner();
 
                 // find tck, tms and tdo using id code scan
@@ -515,15 +515,16 @@ void commandLineInterface()
 
                 if (debug != quiet){
                     idcodeBanner();
-                    Serial.println("------- IDCODE complete ---------");
+                    Serial.println("+------ IDCODE complete --------+");
                 }
 
                 if (id_hit)
                 {
                     // if id code is consistent search for tdi
-                    id_code = readIdCode(); 
+                    id_code = readIdCode();
                     Serial.println("    TCK, TMS, and TDO found.");
-                    Serial.println("--- BYPASS searching, just TDI --");
+                    Serial.println("");
+                    Serial.println("+-- BYPASS searching, just TDI -+");
                     widthBanner();
                     {
                         bitWrite(pin_blacklist, tck_pin, HIGH);
@@ -543,25 +544,25 @@ void commandLineInterface()
             }
             break;
         case 'i':
-            Serial.println("------- IDCODE searching --------");
+            Serial.println("+------ IDCODE searching -------+");
             idcodeBanner();
             identifyPins(3, &testIdCode);
             if (debug != quiet){
                 idcodeBanner();
-                Serial.println("------- IDCODE complete ---------");
+                Serial.println("+------ IDCODE complete --------+");
             }
             break;
         case 'b':
-            Serial.println("------- BYPASS searching --------");
+            Serial.println("+------ BYPASS searching -------+");
             widthBanner();
             identifyPins(4, &testBypass);
             if (debug != quiet){
                 widthBanner();
-                Serial.println("------- BYPASS complete ---------");
+                Serial.println("+------ BYPASS complete --------+");
             }
             break;
         case 't':
-            Serial.println("--- BYPASS searching, just TDI --");
+            Serial.println("+-- BYPASS searching, just TDI -+");
             widthBanner();
             bitWrite(pin_blacklist, tck_pin, HIGH);
             bitWrite(pin_blacklist, tms_pin, HIGH);
