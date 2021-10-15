@@ -47,6 +47,7 @@ without the need to rebuild the project.
  t - TDI-only BYPASS search
  m - set pin mask, current: 0xFC
  d - set debug level: 1
+ c - half cycle us, current: 32
  h - print this help
 +-------------------------------+
 ```

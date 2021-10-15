@@ -31,6 +31,8 @@
 uint64_t pin_mask = PIN_MASK;
 uint8_t pin_max = 0;
 
+uint32_t clock_half_cycle_us = CLOCK_HALF_CYCLE_US;
+
 uint32_t bypass_pattern = 0b10011101001101101000010111001001;
 
 uint8_t ir_length = 2;
@@ -63,10 +65,10 @@ bool moveBit(bool tms_val, bool tdi_val)
     digitalWrite(tms_pin, tms_val);
     digitalWrite(tdi_pin, tdi_val);
     digitalWrite(tck_pin, HIGH);
-    delayMicroseconds(CLOCK_HALF_CYCLE_US);
+    delayMicroseconds(clock_half_cycle_us);
     digitalWrite(tck_pin, LOW);
     tdo_val = digitalRead(tdo_pin);
-    delayMicroseconds(CLOCK_HALF_CYCLE_US);
+    delayMicroseconds(clock_half_cycle_us);
 
     if (debug == verbose)
     {
@@ -651,6 +653,14 @@ void commandLineInterface()
                 Serial.println(debug);
             }
             break;
+        case 'c':
+            {
+                Serial.print("Enter clock half cycle in microseconds ");
+                clock_half_cycle_us = readCliUnsignedInt();
+                Serial.print("Clock hald cycle set to ");
+                Serial.println((unsigned int) clock_half_cycle_us, DEC);
+            }
+            break;
         default:
             Serial.println("+-------------------------------+");
             Serial.println("|  JTAGscan Jtag Pinout Finder  |");
@@ -662,7 +672,9 @@ void commandLineInterface()
             Serial.print(" m - set pin mask, current: 0x");
             Serial.println((unsigned long) pin_mask, HEX);
             Serial.print(" d - set debug level. current: ");
-            Serial.println((byte)debug);
+            Serial.println((byte) debug);
+            Serial.print(" c - half cycle us, current: ");
+            Serial.println((unsigned int) clock_half_cycle_us);
             Serial.println(" h - print this help");
             Serial.println("+-------------------------------+");
             break;
