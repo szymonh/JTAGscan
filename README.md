@@ -1,6 +1,6 @@
 # JTAGscan
 
-JTAGscan allows you to find JTAG ports without buying expensive hardware like the JTAGulator.
+JTAGscan allows you to find JTAG ports without buying specialized hardware like the JTAGulator.
 All you need is a Arduino compatible board and optionally a logic level shifter.
 
 ## How does it work?
