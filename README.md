@@ -140,3 +140,8 @@ Debug level set to 1
 ## No Platformio?
 
 No problem, just copy the contents of src/main.cpp to a new Arduino project, remove the Arduino.h import from the first line and you're ready to go.
+
+
+## Using ARM?
+
+Check [SWDscan](https://github.com/szymonh/SWDscan) to identify the Serial Wire Debug pins.
